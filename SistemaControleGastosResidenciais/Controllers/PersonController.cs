@@ -9,10 +9,10 @@ namespace SistemaControleGastosResidenciais.Controllers {
     [ApiController]
     [Route("api/people")]
     public class PersonController : ControllerBase {
-        private IPersonServices _personService;
+        private IPersonService _personService;
 
         // O construtor recebe uma instância do serviço de pessoas, que é injetada pelo mecanismo de injeção de dependência
-        public PersonController(IPersonServices personService) {
+        public PersonController(IPersonService personService) {
             _personService = personService;
         }
 
