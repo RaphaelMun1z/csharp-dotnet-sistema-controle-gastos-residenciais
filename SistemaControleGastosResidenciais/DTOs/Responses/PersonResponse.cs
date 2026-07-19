@@ -1,6 +1,4 @@
-﻿namespace SistemaControleGastosResidenciais.DTOs.Responses
-{
-    public class PersonResponse
-    {
+﻿namespace SistemaControleGastosResidenciais.DTOs.Responses {
+    public class PersonResponse {
     }
 }

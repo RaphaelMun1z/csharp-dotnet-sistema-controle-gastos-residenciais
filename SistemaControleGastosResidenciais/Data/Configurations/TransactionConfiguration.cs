@@ -2,13 +2,10 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SistemaControleGastosResidenciais.Entities;
 
-namespace SistemaControleGastosResidenciais.Data.Configurations
-{
+namespace SistemaControleGastosResidenciais.Data.Configurations {
     // Define as regras de configuração da entidade Transaction no banco de dados
-    public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
-    {
-        public void Configure(EntityTypeBuilder<Transaction> builder)
-        {
+    public class TransactionConfiguration : IEntityTypeConfiguration<Transaction> {
+        public void Configure(EntityTypeBuilder<Transaction> builder) {
             // Define o identificador da transação como chave primária
             builder.HasKey(transaction => transaction.Id);
 

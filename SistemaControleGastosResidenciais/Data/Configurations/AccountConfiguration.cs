@@ -2,13 +2,10 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SistemaControleGastosResidenciais.Entities;
 
-namespace SistemaControleGastosResidenciais.Data.Configurations
-{
+namespace SistemaControleGastosResidenciais.Data.Configurations {
     // Define as regras de configuração da entidade Account no banco de dados
-    public class AccountConfiguration : IEntityTypeConfiguration<Account>
-    {
-        public void Configure(EntityTypeBuilder<Account> builder)
-        {
+    public class AccountConfiguration : IEntityTypeConfiguration<Account> {
+        public void Configure(EntityTypeBuilder<Account> builder) {
             // Define o identificador da conta como chave primária
             builder.HasKey(account => account.Id);
 

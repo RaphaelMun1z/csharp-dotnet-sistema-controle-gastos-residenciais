@@ -1,7 +1,7 @@
-﻿namespace SistemaControleGastosResidenciais.Entities
-{
-    public class Transaction
-    {
+﻿using SistemaControleGastosResidenciais.Enums;
+
+namespace SistemaControleGastosResidenciais.Entities {
+    public class Transaction {
         public Guid Id { get; set; }
 
         public Guid PersonId { get; set; }

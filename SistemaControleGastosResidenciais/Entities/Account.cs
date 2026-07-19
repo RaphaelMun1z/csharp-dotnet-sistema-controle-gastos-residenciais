@@ -1,7 +1,5 @@
-﻿namespace SistemaControleGastosResidenciais.Entities
-{
-    public class Account
-    {
+﻿namespace SistemaControleGastosResidenciais.Entities {
+    public class Account {
         public Guid Id { get; set; }
 
         public Guid PersonId { get; set; }

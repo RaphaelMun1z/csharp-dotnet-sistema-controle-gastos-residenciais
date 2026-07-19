@@ -1,6 +1,4 @@
-﻿namespace SistemaControleGastosResidenciais.Repositories
-{
-    public class PersonRepository
-    {
+﻿namespace SistemaControleGastosResidenciais.Repositories {
+    public class PersonRepository {
     }
 }

@@ -2,13 +2,10 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SistemaControleGastosResidenciais.Entities;
 
-namespace SistemaControleGastosResidenciais.Data.Configurations
-{
+namespace SistemaControleGastosResidenciais.Data.Configurations {
     // Define as regras de configuração da entidade Person no banco de dados
-    public class PersonConfiguration : IEntityTypeConfiguration<Person>
-    {
-        public void Configure(EntityTypeBuilder<Person> builder)
-        {
+    public class PersonConfiguration : IEntityTypeConfiguration<Person> {
+        public void Configure(EntityTypeBuilder<Person> builder) {
             // Define o identificador da pessoa como chave primária
             builder.HasKey(person => person.Id);
 

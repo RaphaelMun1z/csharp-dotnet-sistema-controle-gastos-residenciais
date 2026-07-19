@@ -1,7 +1,5 @@
-﻿namespace SistemaControleGastosResidenciais.Repositories.Interfaces
-{
-    public interface IPersonRepository
-    {
+﻿namespace SistemaControleGastosResidenciais.Repositories.Interfaces {
+    public interface IPersonRepository {
 
     }
 }
