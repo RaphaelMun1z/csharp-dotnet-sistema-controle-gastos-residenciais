@@ -3,23 +3,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SistemaControleGastosResidenciais.Entities;
 
 namespace SistemaControleGastosResidenciais.Data.Configurations {
-    // Define as regras de configuração da entidade Account no banco de dados
+    // Define regras específicas da entidade Account que não são representadas diretamente pelas anotações
     public class AccountConfiguration : IEntityTypeConfiguration<Account> {
         public void Configure(EntityTypeBuilder<Account> builder) {
-            // Define o identificador da conta como chave primária
-            builder.HasKey(account => account.Id);
-
-            // Define as regras dos campos de e-mail e senha
-            builder.Property(account => account.Email)
-                .IsRequired()
-                .HasMaxLength(150);
-
-            builder.Property(account => account.Password)
-                .IsRequired()
-                .HasMaxLength(255);
-
             // Garante que não existam duas contas com o mesmo e-mail
             builder.HasIndex(account => account.Email)
+                .IsUnique();
+
+            // Garante que uma pessoa tenha apenas uma conta
+            builder.HasIndex(account => account.PersonId)
                 .IsUnique();
 
             // Define a relação entre Account e Person

@@ -3,23 +3,15 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using SistemaControleGastosResidenciais.Entities;
 
 namespace SistemaControleGastosResidenciais.Data.Configurations {
-    // Define as regras de configuração da entidade Transaction no banco de dados
+    // Define regras específicas da entidade Transaction que não são representadas diretamente pelas anotações
     public class TransactionConfiguration : IEntityTypeConfiguration<Transaction> {
         public void Configure(EntityTypeBuilder<Transaction> builder) {
-            // Define o identificador da transação como chave primária
-            builder.HasKey(transaction => transaction.Id);
-
-            // Define as regras dos campos de descrição, valor e tipo
-            builder.Property(transaction => transaction.Description)
-                .IsRequired()
-                .HasMaxLength(255);
-
+            // Define a precisão utilizada para valores monetários
             builder.Property(transaction => transaction.Amount)
-                .IsRequired()
                 .HasPrecision(18, 2);
 
-            builder.Property(transaction => transaction.Type)
-                .IsRequired();
+            // Cria um índice para melhorar as consultas de transações associadas a uma pessoa
+            builder.HasIndex(transaction => transaction.PersonId);
 
             // Define a relação entre Transaction e Person
             // Cada transação pertence a uma pessoa e será excluída caso essa pessoa seja removida
@@ -27,6 +19,24 @@ namespace SistemaControleGastosResidenciais.Data.Configurations {
                 .WithMany(person => person.Transactions)
                 .HasForeignKey(transaction => transaction.PersonId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Garante que o valor da transação seja maior que zero
+            builder.ToTable(table =>
+                table.HasCheckConstraint(
+                    "CK_Transactions_Amount",
+                    "[Amount] > 0"
+                )
+            );
+
+            // Garante que somente tipos válidos de transação sejam armazenados
+            // 0 representa despesa
+            // 1 representa receita
+            builder.ToTable(table =>
+                table.HasCheckConstraint(
+                    "CK_Transactions_Type",
+                    "[Type] IN (0, 1)"
+                )
+            );
         }
     }
 }
