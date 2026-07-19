@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Responses\" />
     <Folder Include="DTOs\Requests\" />
-    <Folder Include="Enums\" />
     <Folder Include="Data\" />
     <Folder Include="Mappings\" />
     <Folder Include="Exceptions\" />
