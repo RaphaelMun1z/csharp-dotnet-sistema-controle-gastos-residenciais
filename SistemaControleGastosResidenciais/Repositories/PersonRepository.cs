@@ -13,7 +13,8 @@ namespace SistemaControleGastosResidenciais.Repositories {
 
         // Busca uma pessoa pelo id
         public Person? FindById(Guid id) {
-            return _context.People.FirstOrDefault(person => person.Id == id);
+            return _context.People
+                .FirstOrDefault(person => person.Id == id);
         }
 
         // Busca todas as pessoas com paginação

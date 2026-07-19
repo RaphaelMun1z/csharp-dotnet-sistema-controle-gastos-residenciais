@@ -1,7 +1,11 @@
-﻿namespace SistemaControleGastosResidenciais.DTOs.Requests {
-    public class CreatePersonRequest {
-        public string Name { get; set; } = string.Empty;
+﻿using System.ComponentModel.DataAnnotations;
 
-        public DateOnly BirthDate { get; set; }
-    }
+namespace SistemaControleGastosResidenciais.DTOs.Requests {
+    public record CreatePersonRequest(
+        [Required(ErrorMessage = "O nome é obrigatório.")]
+        [MaxLength(150, ErrorMessage = "O nome não pode ter mais de 150 caracteres.")]
+        string Name,
+
+        DateOnly BirthDate
+    );
 }

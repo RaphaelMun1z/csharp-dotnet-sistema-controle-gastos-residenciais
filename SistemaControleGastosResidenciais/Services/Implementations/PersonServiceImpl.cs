@@ -8,6 +8,7 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
     public class PersonServiceImpl : IPersonService {
         private readonly IPersonRepository _personRepository;
 
+        // Recebe o repositório por injeção de dependência
         public PersonServiceImpl(IPersonRepository personRepository) {
             _personRepository = personRepository;
         }
