@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SistemaControleGastosResidenciais.Entities;
+using SistemaControleGastosResidenciais.DTOs.Requests;
+using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
 // Utilizei um pré-fixo "api" nas endpoints da API, para indicar que se trata de uma API Rest
@@ -7,45 +8,48 @@ using SistemaControleGastosResidenciais.Services.Interfaces;
 // Isso permite que futuras versões da API sejam lançadas sem quebrar a compatibilidade com clientes existentes.
 namespace SistemaControleGastosResidenciais.Controllers {
     [ApiController]
-    [Route("api/people")]
+    [Route("api/v1/people")]
     public class PersonController : ControllerBase {
-        private IPersonService _personService;
+        private readonly IPersonService _personService;
 
         // O construtor recebe uma instância do serviço de pessoas, que é injetada pelo mecanismo de injeção de dependência
         public PersonController(IPersonService personService) {
             _personService = personService;
         }
 
-        [HttpGet("v1")]
-        public IActionResult Get() {
-            // Chama o método de busca presente no serviço, que retorna a lista de todas as pessoas registradas
-            List<Person> peopleList = _personService.FindAll();
-            return Ok(peopleList);
+        [HttpGet]
+        public ActionResult<PagedResponse<PersonResponse>> GetAll(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10
+        ) {
+            // Chama o método de busca presente no serviço, passando os parâmetros de paginação
+            PagedResponse<PersonResponse> people = _personService.FindAll(page, pageSize);
+            return Ok(people);
         }
 
-        [HttpGet("v1/{id}")]
-        public ActionResult<Person> Get(Guid id) {
+        [HttpGet("{id}")]
+        public ActionResult<PersonResponse> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da pessoa a ser buscada
             // Retorna a pessoa encontrada, com status 200, indicando que a operação foi bem sucedida
-            Person personFound = _personService.FindById(id);
+            PersonResponse personFound = _personService.FindById(id);
             return Ok(personFound);
         }
 
-        [HttpPost("v1")]
-        public IActionResult Post([FromBody] Person person) {
-            // Solicita a criação da pessoa via serviço, e recebe a instância cadastrada
-            // Retorna status 200, indicando que a pessoa foi cadastrada com sucesso
-            Person createdPerson = _personService.Create(person);
-            return Ok(createdPerson);
+        [HttpPost]
+        public ActionResult<PersonResponse> Create([FromBody] CreatePersonRequest personDTO) {
+            // Solicita ao serviço a criação da pessoa
+            PersonResponse createdPerson = _personService.Create(personDTO);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = createdPerson.Id },
+                createdPerson
+            );
         }
 
-
-        [HttpDelete("v1/{id}")]
+        [HttpDelete("{id}")]
         public IActionResult DeleteById(Guid id) {
-            // Chama o método de deletar presente no serviço, passando o ID da pessoa a ser deletada
+            // Solicita ao serviço a exclusão da pessoa pelo ID
             _personService.Delete(id);
-
-            // Retorna 'no content', indicando que a operação foi bem sucedida, mas sem conteúdo para retornar
             return NoContent();
         }
     }

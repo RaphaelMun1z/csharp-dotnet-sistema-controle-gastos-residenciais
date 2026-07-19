@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.RazorPages;
-using SistemaControleGastosResidenciais.DTOs.Requests;
+﻿using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
@@ -13,17 +12,41 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             _personRepository = personRepository;
         }
 
-        public List<PersonResponse> FindAll() {
-            // Busca todas as pessoas registradas
-            List<Person> peopleList = _personRepository.FindAll();
+        public PagedResponse<PersonResponse> FindAll(int page, int pageSize) {
+            // Valida os parâmetros de paginação
+            if (page < 1) {
+                throw new BadHttpRequestException("A página deve ser maior ou igual a 1");
+            }
 
-            // Converte as entidades encontradas para DTO
-            return peopleList.Select(person => new PersonResponse {
-                Id = person.Id,
-                Name = person.Name,
-                BirthDate = person.BirthDate,
-                Age = person.Age
-            }).ToList();
+            if (pageSize < 1 || pageSize > 100) {
+                throw new BadHttpRequestException("A quantidade de registros por página deve estar entre 1 e 100");
+            }
+
+            // Busca somente os registros pertencentes à página solicitada
+            List<Person> peopleList = _personRepository.FindAll(page, pageSize);
+
+            // Busca a quantidade total de pessoas cadastradas
+            int totalElements = _personRepository.Count();
+
+            // Calcula a quantidade total de páginas
+            int totalPages = (int)Math.Ceiling(totalElements / (double)pageSize);
+
+            // Converte as entidades para DTO
+            List<PersonResponse> peopleResponse =
+                peopleList.Select(person => new PersonResponse {
+                    Id = person.Id,
+                    Name = person.Name,
+                    BirthDate = person.BirthDate,
+                    Age = person.Age
+                }).ToList();
+
+            return new PagedResponse<PersonResponse> {
+                Content = peopleResponse,
+                Page = page,
+                PageSize = pageSize,
+                TotalElements = totalElements,
+                TotalPages = totalPages
+            };
         }
 
         public PersonResponse FindById(Guid id) {
@@ -50,40 +73,24 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
         }
 
         public PersonResponse Create(CreatePersonRequest personDTO) {
-            // Realiza a validação do nome, não pode ser nulo nem estar vazio
-            if (personDTO.Name == null || personDTO.Name.Trim().Length == 0) {
-                throw new BadHttpRequestException("Informe um nome válido!");
-            }
-
-            // Referência para a data de hoje
-            DateOnly today = DateOnly.FromDateTime(DateTime.Today);
-            // Define que a idade máxima permitida é de 150 anos
-            DateOnly minimumBirthDate = today.AddYears(-150);
-
-            // Realiza a validação da data de nascimento
-            // Não pode ter 'nascido no futuro'
-            // Não pode possuir idade superior a 150 anos
-            if (personDTO.BirthDate > today || personDTO.BirthDate < minimumBirthDate) {
-                throw new BadHttpRequestException("Informe uma data de nascimento válida!");
-            }
-
-            Person newPerson = new Person {
-                Id = Guid.NewGuid(),
-                Name = personDTO.Name,
-                BirthDate = personDTO.BirthDate
-            };
+            // Cria uma nova instância de pessoa
+            // As validações de nome e data de nascimento são realizadas pela própria entidade
+            // O ID é gerado automaticamente dentro do construtor da entidade
+            Person newPerson = new Person(
+                personDTO.Name,
+                personDTO.BirthDate
+            );
 
             // Persiste a pessoa no banco de dados
             Person savedPerson = _personRepository.Create(newPerson);
 
-            PersonResponse savedPersonResponse = new PersonResponse {
+            // Converte a entidade persistida para DTO de resposta
+            return new PersonResponse {
                 Id = savedPerson.Id,
                 Name = savedPerson.Name,
                 BirthDate = savedPerson.BirthDate,
                 Age = savedPerson.Age
             };
-
-            return savedPersonResponse;
         }
 
         public void Delete(Guid id) {
