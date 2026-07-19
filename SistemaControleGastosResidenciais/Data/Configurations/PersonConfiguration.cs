@@ -9,27 +9,16 @@ namespace SistemaControleGastosResidenciais.Data.Configurations {
             // Define o identificador da pessoa como chave primária
             builder.HasKey(person => person.Id);
 
-            // Define as regras dos campos de nome e idade
+            // Define as regras dos campos de nome e data de nascimento
             builder.Property(person => person.Name)
                 .IsRequired()
                 .HasMaxLength(150);
 
-            builder.Property(person => person.Age)
+            builder.Property(person => person.BirthDate)
                 .IsRequired();
 
-            // Define a relação entre Person e Transaction
-            // Uma pessoa pode possuir várias transações e elas serão excluídas junto com a pessoa
-            builder.HasMany(person => person.Transactions)
-                .WithOne(transaction => transaction.Person)
-                .HasForeignKey(transaction => transaction.PersonId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            // Define a relação entre Person e Account
-            // Uma pessoa pode possuir uma conta e ela será excluída caso a pessoa seja removida
-            builder.HasOne(person => person.Account)
-                .WithOne(account => account.Person)
-                .HasForeignKey<Account>(account => account.PersonId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // Ignora a idade no mapeamento, pois ela é calculada a partir da data de nascimento
+            builder.Ignore(person => person.Age);
         }
     }
 }

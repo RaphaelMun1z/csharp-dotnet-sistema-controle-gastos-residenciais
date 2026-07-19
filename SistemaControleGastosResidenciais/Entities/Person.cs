@@ -7,7 +7,21 @@ namespace SistemaControleGastosResidenciais.Entities {
 
         public string Name { get; set; } = string.Empty;
 
-        public int Age { get; set; }
+        public DateOnly BirthDate { get; set; }
+
+        public int Age {
+            get {
+                DateOnly today = DateOnly.FromDateTime(DateTime.Today);
+
+                int age = today.Year - BirthDate.Year;
+
+                if (BirthDate > today.AddYears(-age)) {
+                    age--;
+                }
+
+                return age;
+            }
+        }
 
         public Account? Account { get; set; }
 
