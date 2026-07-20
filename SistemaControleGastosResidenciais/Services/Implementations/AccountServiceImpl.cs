@@ -1,18 +1,19 @@
 ﻿using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
+using SistemaControleGastosResidenciais.Mappings;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
 namespace SistemaControleGastosResidenciais.Services.Implementations {
     public class AccountServiceImpl : IAccountService {
         private readonly IAccountRepository _accountRepository;
-        private readonly IPersonRepository _personRepository;
+        private readonly IRepository<Person> _personRepository;
 
         // Recebe os repositórios por injeção de dependência
         public AccountServiceImpl(
             IAccountRepository accountRepository,
-            IPersonRepository personRepository
+            IRepository<Person> personRepository
         ) {
             _accountRepository = accountRepository;
             _personRepository = personRepository;
@@ -33,11 +34,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             }
 
             // Converte a entidade encontrada para DTO de resposta
-            return new AccountResponse(
-                foundAccount.Id,
-                foundAccount.PersonId,
-                foundAccount.Email
-            );
+            return AccountMapper.ToResponse(foundAccount);
         }
 
         public AccountResponse Create(CreateAccountRequest accountDTO) {
@@ -77,11 +74,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             Account savedAccount = _accountRepository.Create(newAccount);
 
             // Converte a entidade persistida para DTO de resposta
-            return new AccountResponse(
-                savedAccount.Id,
-                savedAccount.PersonId,
-                savedAccount.Email
-            );
+            return AccountMapper.ToResponse(savedAccount);
         }
 
         public void Delete(Guid id) {
@@ -90,7 +83,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
                 throw new BadHttpRequestException("Informe um ID válido");
             }
 
-            // Busca a conta que será removida
+            // Busca a conta pelo id
             Account? account = _accountRepository.FindById(id);
 
             // Se a conta não for encontrada, lança uma exceção
@@ -98,8 +91,8 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
                 throw new KeyNotFoundException("Conta não encontrada");
             }
 
-            // Remove a conta
-            _accountRepository.Delete(account);
+            // Remove a conta pelo ID
+            _accountRepository.Delete(id);
         }
     }
 }

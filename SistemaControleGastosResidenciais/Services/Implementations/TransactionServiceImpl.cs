@@ -2,18 +2,19 @@
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Enums;
+using SistemaControleGastosResidenciais.Mappings;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
 namespace SistemaControleGastosResidenciais.Services.Implementations {
     public class TransactionServiceImpl : ITransactionService {
         private readonly ITransactionRepository _transactionRepository;
-        private readonly IPersonRepository _personRepository;
+        private readonly IRepository<Person> _personRepository;
 
         // Recebe os repositórios por injeção de dependência
         public TransactionServiceImpl(
             ITransactionRepository transactionRepository,
-            IPersonRepository personRepository
+            IRepository<Person> personRepository
         ) {
             _transactionRepository = transactionRepository;
             _personRepository = personRepository;
@@ -34,13 +35,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             }
 
             // Converte a entidade encontrada para DTO de resposta
-            return new TransactionResponse(
-                foundTransaction.Id,
-                foundTransaction.PersonId,
-                foundTransaction.Amount,
-                foundTransaction.Type,
-                foundTransaction.Description
-            );
+            return TransactionMapper.ToResponse(foundTransaction);
         }
 
         public PagedResponse<TransactionResponse> FindAll(int page, int pageSize) {
@@ -61,13 +56,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             // Converte as entidades encontradas para DTOs de resposta
             List<TransactionResponse> transactionResponseList =
                 transactionList.Select(transaction =>
-                    new TransactionResponse(
-                        transaction.Id,
-                        transaction.PersonId,
-                        transaction.Amount,
-                        transaction.Type,
-                        transaction.Description
-                    )
+                    TransactionMapper.ToResponse(transaction)
                 ).ToList();
 
             return new PagedResponse<TransactionResponse> {
@@ -115,13 +104,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             // Converte as entidades encontradas para DTOs de resposta
             List<TransactionResponse> transactionResponseList =
                 transactionList.Select(transaction =>
-                    new TransactionResponse(
-                        transaction.Id,
-                        transaction.PersonId,
-                        transaction.Amount,
-                        transaction.Type,
-                        transaction.Description
-                    )
+                    TransactionMapper.ToResponse(transaction)
                 ).ToList();
 
             return new PagedResponse<TransactionResponse> {
@@ -160,13 +143,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             Transaction savedTransaction = _transactionRepository.Create(newTransaction);
 
             // Converte a entidade persistida para DTO de resposta
-            return new TransactionResponse(
-                savedTransaction.Id,
-                savedTransaction.PersonId,
-                savedTransaction.Amount,
-                savedTransaction.Type,
-                savedTransaction.Description
-            );
+            return TransactionMapper.ToResponse(savedTransaction);
         }
 
         private static void ValidatePagination(int page, int pageSize) {

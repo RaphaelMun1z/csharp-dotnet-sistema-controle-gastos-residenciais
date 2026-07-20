@@ -3,27 +3,13 @@ using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 
 namespace SistemaControleGastosResidenciais.Repositories.Implementations {
-    public class TransactionRepository : ITransactionRepository {
+    public class TransactionRepository : GenericRepository<Transaction>, ITransactionRepository {
         private readonly AppDbContext _context;
 
         // Recebe o contexto do banco de dados por injeção de dependência
-        public TransactionRepository(AppDbContext context) {
+        // Também repassa o contexto para o repositório genérico
+        public TransactionRepository(AppDbContext context) : base(context) {
             _context = context;
-        }
-
-        // Busca uma transação pelo ID
-        public Transaction? FindById(Guid id) {
-            return _context.Transactions
-                .FirstOrDefault(transaction => transaction.Id == id);
-        }
-
-        // Busca todas as transações utilizando paginação
-        public List<Transaction> FindAll(int page, int pageSize) {
-            return _context.Transactions
-                .OrderBy(transaction => transaction.Description)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
         }
 
         // Busca as transações associadas a uma pessoa utilizando paginação
@@ -40,23 +26,10 @@ namespace SistemaControleGastosResidenciais.Repositories.Implementations {
                 .ToList();
         }
 
-        // Retorna a quantidade total de transações cadastradas
-        public int Count() {
-            return _context.Transactions.Count();
-        }
-
         // Retorna a quantidade total de transações associadas a uma pessoa
         public int CountByPersonId(Guid personId) {
             return _context.Transactions
                 .Count(transaction => transaction.PersonId == personId);
-        }
-
-        // Adiciona a transação ao contexto e persiste os dados no banco
-        public Transaction Create(Transaction transaction) {
-            _context.Transactions.Add(transaction);
-            _context.SaveChanges();
-
-            return transaction;
         }
     }
 }

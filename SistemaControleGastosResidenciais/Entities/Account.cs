@@ -3,13 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaControleGastosResidenciais.Entities {
     [Table("tb_accounts", Schema = "dbo")]
-    public class Account {
+    public class Account : BaseEntity {
         private string _email = string.Empty;
         private string _password = string.Empty;
-
-        [Key]
-        [Column("Id", TypeName = "uniqueidentifier")]
-        public Guid Id { get; private set; }
 
         [Column("PersonId", TypeName = "uniqueidentifier")]
         [Required]
@@ -49,13 +45,11 @@ namespace SistemaControleGastosResidenciais.Entities {
             Guid personId,
             string email,
             string password
-        ) {
+        ) : base(Guid.NewGuid()) {
             if (personId == Guid.Empty) {
                 throw new ArgumentException("Informe um identificador de pessoa válido", nameof(personId));
             }
-
-            // Gera um novo identificador único para a conta
-            Id = Guid.NewGuid();
+            
             PersonId = personId;
             Email = email;
             Password = password;

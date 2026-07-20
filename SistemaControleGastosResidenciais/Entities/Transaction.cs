@@ -4,14 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaControleGastosResidenciais.Entities {
     [Table("tb_transactions", Schema = "dbo")]
-    public class Transaction {
+    public class Transaction : BaseEntity {
         private decimal _amount;
         private TransactionTypeEnum _type;
         private string _description = string.Empty;
-
-        [Key]
-        [Column("Id", TypeName = "uniqueidentifier")]
-        public Guid Id { get; private set; }
 
         [Column("PersonId", TypeName = "uniqueidentifier")]
         public Guid PersonId { get; private set; }

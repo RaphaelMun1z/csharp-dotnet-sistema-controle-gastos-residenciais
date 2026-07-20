@@ -1,15 +1,16 @@
 ﻿using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
+using SistemaControleGastosResidenciais.Mappings;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
 namespace SistemaControleGastosResidenciais.Services.Impl {
     public class PersonServiceImpl : IPersonService {
-        private readonly IPersonRepository _personRepository;
+        private readonly IRepository<Person> _personRepository;
 
         // Recebe o repositório por injeção de dependência
-        public PersonServiceImpl(IPersonRepository personRepository) {
+        public PersonServiceImpl(IRepository<Person> personRepository) {
             _personRepository = personRepository;
         }
 
@@ -34,12 +35,12 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
 
             // Converte as entidades para DTO
             List<PersonResponse> peopleResponse =
-                peopleList.Select(person => new PersonResponse {
-                    Id = person.Id,
-                    Name = person.Name,
-                    BirthDate = person.BirthDate,
-                    Age = person.Age
-                }).ToList();
+                peopleList.Select(person => new PersonResponse(
+                person.Id,
+                person.Name,
+                person.BirthDate,
+                person.Age
+            )).ToList();
 
             return new PagedResponse<PersonResponse> {
                 Content = peopleResponse,
@@ -65,12 +66,7 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             }
 
             // Retorna os dados da pessoa encontrada
-            return new PersonResponse {
-                Id = foundPerson.Id,
-                Name = foundPerson.Name,
-                BirthDate = foundPerson.BirthDate,
-                Age = foundPerson.Age
-            };
+            return PersonMapper.ToResponse(foundPerson);
         }
 
         public PersonResponse Create(CreatePersonRequest personDTO) {
@@ -86,12 +82,7 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             Person savedPerson = _personRepository.Create(newPerson);
 
             // Converte a entidade persistida para DTO de resposta
-            return new PersonResponse {
-                Id = savedPerson.Id,
-                Name = savedPerson.Name,
-                BirthDate = savedPerson.BirthDate,
-                Age = savedPerson.Age
-            };
+            return PersonMapper.ToResponse(savedPerson);
         }
 
         public void Delete(Guid id) {
@@ -108,9 +99,8 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
                 throw new KeyNotFoundException("Pessoa não encontrada!");
             }
 
-            // Deleta a pessoa, caso encontrada
-            _personRepository.Delete(person);
+            // Deleta a pessoa pelo ID
+            _personRepository.Delete(id);
         }
-
     }
 }

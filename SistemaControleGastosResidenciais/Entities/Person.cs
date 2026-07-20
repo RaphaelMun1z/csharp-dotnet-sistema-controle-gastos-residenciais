@@ -3,15 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SistemaControleGastosResidenciais.Entities {
     [Table("tb_people", Schema = "dbo")]
-    public class Person {
+    public class Person : BaseEntity {
         // Campos privados para armazenar os valores das propriedades
         private DateOnly _birthDate;
         private string _name = string.Empty;
-
-        [Key]
-        [Column("Id", TypeName = "uniqueidentifier")]
-        public Guid Id { get; private set; }
-        // Obs.: Utilizei 'private' em alguns atributos para garantir que eles só possam ser modificados dentro da própria classe, mantendo a integridade dos dados.
 
         [Column("Name", TypeName = "nvarchar(150)")]
         [Required(ErrorMessage = "O nome é obrigatório.")]
