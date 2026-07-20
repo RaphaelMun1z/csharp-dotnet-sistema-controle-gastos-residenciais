@@ -13,7 +13,7 @@ namespace SistemaControleGastosResidenciais.DTOs.Requests {
         )]
         decimal Amount,
 
-        TransactionType Type,
+        TransactionTypeEnum Type,
 
         [Required(ErrorMessage = "A descrição é obrigatória.")]
         [MaxLength(255, ErrorMessage = "A descrição não pode ter mais de 255 caracteres.")]

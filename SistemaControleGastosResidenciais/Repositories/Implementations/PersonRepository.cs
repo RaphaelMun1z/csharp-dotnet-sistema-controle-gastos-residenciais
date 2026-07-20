@@ -2,7 +2,7 @@
 using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 
-namespace SistemaControleGastosResidenciais.Repositories {
+namespace SistemaControleGastosResidenciais.Repositories.Implementations {
     public class PersonRepository : IPersonRepository {
         private readonly AppDbContext _context;
 

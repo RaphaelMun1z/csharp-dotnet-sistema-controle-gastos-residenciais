@@ -6,7 +6,7 @@ namespace SistemaControleGastosResidenciais.Entities {
     [Table("tb_transactions", Schema = "dbo")]
     public class Transaction {
         private decimal _amount;
-        private TransactionType _type;
+        private TransactionTypeEnum _type;
         private string _description = string.Empty;
 
         [Key]
@@ -27,7 +27,7 @@ namespace SistemaControleGastosResidenciais.Entities {
         }
 
         [Column("Type", TypeName = "int")]
-        public TransactionType Type {
+        public TransactionTypeEnum Type {
             get => _type;
 
             // Valida o tipo antes de atribuí-lo à propriedade
@@ -56,7 +56,7 @@ namespace SistemaControleGastosResidenciais.Entities {
         public Transaction(
             Guid personId,
             decimal amount,
-            TransactionType type,
+            TransactionTypeEnum type,
             string description
         ) {
             if (personId == Guid.Empty) {
@@ -80,9 +80,9 @@ namespace SistemaControleGastosResidenciais.Entities {
             return amount;
         }
 
-        private static TransactionType ValidateType(TransactionType type) {
+        private static TransactionTypeEnum ValidateType(TransactionTypeEnum type) {
             // Verifica se o tipo informado corresponde a um valor válido do enum
-            if (!Enum.IsDefined(typeof(TransactionType), type)) {
+            if (!Enum.IsDefined(typeof(TransactionTypeEnum), type)) {
                 throw new ArgumentException("Informe um tipo de transação válido", nameof(type));
             }
 

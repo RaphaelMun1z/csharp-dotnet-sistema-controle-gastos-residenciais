@@ -143,7 +143,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             }
 
             // Pessoas menores de 18 anos podem registrar apenas despesas
-            if (person.Age < 18 && transactionDTO.Type == TransactionType.Revenue) {
+            if (person.Age < 18 && transactionDTO.Type == TransactionTypeEnum.Revenue) {
                 throw new InvalidOperationException("Pessoas menores de 18 anos podem registrar apenas despesas");
             }
 

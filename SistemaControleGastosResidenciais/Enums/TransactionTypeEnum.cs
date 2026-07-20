@@ -1,5 +1,5 @@
 ﻿namespace SistemaControleGastosResidenciais.Enums {
-    public enum TransactionType {
+    public enum TransactionTypeEnum {
         Expense,
         Revenue
     }
