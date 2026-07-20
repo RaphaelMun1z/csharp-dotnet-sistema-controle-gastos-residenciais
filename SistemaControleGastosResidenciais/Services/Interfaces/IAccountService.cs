@@ -3,8 +3,8 @@ using SistemaControleGastosResidenciais.DTOs.Responses;
 
 namespace SistemaControleGastosResidenciais.Services.Interfaces {
     public interface IAccountService {
-        AccountResponse FindById(Guid id);
-        AccountResponse Create(CreateAccountRequest accountDTO);
+        AccountResponseDTO FindById(Guid id);
+        AccountResponseDTO Create(CreateAccountRequestDTO accountDTO);
         void Delete(Guid id);
     }
 }

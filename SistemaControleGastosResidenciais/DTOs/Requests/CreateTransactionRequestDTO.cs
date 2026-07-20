@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace SistemaControleGastosResidenciais.DTOs.Requests {
-    public record CreateTransactionRequest(
+    public record CreateTransactionRequestDTO(
         Guid PersonId,
 
         [Range(

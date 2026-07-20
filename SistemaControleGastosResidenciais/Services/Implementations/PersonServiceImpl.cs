@@ -1,7 +1,7 @@
 ﻿using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
-using SistemaControleGastosResidenciais.Mappings;
+using SistemaControleGastosResidenciais.Mappings.Implementations;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
@@ -9,12 +9,14 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
     public class PersonServiceImpl : IPersonService {
         private readonly IRepository<Person> _personRepository;
 
+        private readonly PersonMapper _personMapper = new PersonMapper();
+
         // Recebe o repositório por injeção de dependência
         public PersonServiceImpl(IRepository<Person> personRepository) {
             _personRepository = personRepository;
         }
 
-        public PagedResponse<PersonResponse> FindAll(int page, int pageSize) {
+        public PagedResponseDTO<PersonResponseDTO> FindAll(int page, int pageSize) {
             // Valida os parâmetros de paginação
             if (page < 1) {
                 throw new BadHttpRequestException("A página deve ser maior ou igual a 1");
@@ -34,15 +36,9 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             int totalPages = (int)Math.Ceiling(totalElements / (double)pageSize);
 
             // Converte as entidades para DTO
-            List<PersonResponse> peopleResponse =
-                peopleList.Select(person => new PersonResponse(
-                person.Id,
-                person.Name,
-                person.BirthDate,
-                person.Age
-            )).ToList();
+            List<PersonResponseDTO> peopleResponse = _personMapper.ToResponseList(peopleList);
 
-            return new PagedResponse<PersonResponse> {
+            return new PagedResponseDTO<PersonResponseDTO> {
                 Content = peopleResponse,
                 Page = page,
                 PageSize = pageSize,
@@ -51,7 +47,7 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             };
         }
 
-        public PersonResponse FindById(Guid id) {
+        public PersonResponseDTO FindById(Guid id) {
             // Verifica se o ID não é nulo ou vazio
             if (id == Guid.Empty) {
                 throw new BadHttpRequestException("Informe um ID válido!");
@@ -66,23 +62,20 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             }
 
             // Retorna os dados da pessoa encontrada
-            return PersonMapper.ToResponse(foundPerson);
+            return _personMapper.ToResponse(foundPerson);
         }
 
-        public PersonResponse Create(CreatePersonRequest personDTO) {
+        public PersonResponseDTO Create(CreatePersonRequestDTO personDTO) {
             // Cria uma nova instância de pessoa
             // As validações de nome e data de nascimento são realizadas pela própria entidade
             // O ID é gerado automaticamente dentro do construtor da entidade
-            Person newPerson = new Person(
-                personDTO.Name,
-                personDTO.BirthDate
-            );
+            Person newPerson = _personMapper.ToResponse(personDTO);
 
             // Persiste a pessoa no banco de dados
             Person savedPerson = _personRepository.Create(newPerson);
 
             // Converte a entidade persistida para DTO de resposta
-            return PersonMapper.ToResponse(savedPerson);
+            return _personMapper.ToResponse(savedPerson);
         }
 
         public void Delete(Guid id) {

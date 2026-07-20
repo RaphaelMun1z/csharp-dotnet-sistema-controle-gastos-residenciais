@@ -1,5 +1,5 @@
 ﻿namespace SistemaControleGastosResidenciais.DTOs.Responses {
-    public record PersonResponse(
+    public record PersonResponseDTO(
         Guid Id,
         string Name,
         DateOnly BirthDate,

@@ -54,13 +54,11 @@ namespace SistemaControleGastosResidenciais.Entities {
             decimal amount,
             TransactionTypeEnum type,
             string description
-        ) {
+        ) : base(Guid.NewGuid()) { // Gera um novo identificador único para a entidade
             if (personId == Guid.Empty) {
                 throw new ArgumentException("Informe um identificador de pessoa válido", nameof(personId));
             }
 
-            // Gera um novo identificador único para a transação
-            Id = Guid.NewGuid();
             PersonId = personId;
             Amount = amount;
             Type = type;

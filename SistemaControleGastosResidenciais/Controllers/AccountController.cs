@@ -18,17 +18,17 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet("{id}")]
-        public ActionResult<AccountResponse> GetById(Guid id) {
+        public ActionResult<AccountResponseDTO> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da conta a ser buscada
             // Retorna a conta encontrada, com status 200, indicando que a operação foi bem sucedida
-            AccountResponse accountFound = _accountService.FindById(id);
+            AccountResponseDTO accountFound = _accountService.FindById(id);
             return Ok(accountFound);
         }
 
         [HttpPost]
-        public ActionResult<AccountResponse> Create([FromBody] CreateAccountRequest accountDTO) {
+        public ActionResult<AccountResponseDTO> Create([FromBody] CreateAccountRequestDTO accountDTO) {
             // Solicita ao serviço a criação da conta
-            AccountResponse createdAccount = _accountService.Create(accountDTO);
+            AccountResponseDTO createdAccount = _accountService.Create(accountDTO);
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = createdAccount.Id },

@@ -18,27 +18,27 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet]
-        public ActionResult<PagedResponse<PersonResponse>> GetAll(
+        public ActionResult<PagedResponseDTO<PersonResponseDTO>> GetAll(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10
         ) {
             // Chama o método de busca presente no serviço, passando os parâmetros de paginação
-            PagedResponse<PersonResponse> people = _personService.FindAll(page, pageSize);
+            PagedResponseDTO<PersonResponseDTO> people = _personService.FindAll(page, pageSize);
             return Ok(people);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<PersonResponse> GetById(Guid id) {
+        public ActionResult<PersonResponseDTO> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da pessoa a ser buscada
             // Retorna a pessoa encontrada, com status 200, indicando que a operação foi bem sucedida
-            PersonResponse personFound = _personService.FindById(id);
+            PersonResponseDTO personFound = _personService.FindById(id);
             return Ok(personFound);
         }
 
         [HttpPost]
-        public ActionResult<PersonResponse> Create([FromBody] CreatePersonRequest personDTO) {
+        public ActionResult<PersonResponseDTO> Create([FromBody] CreatePersonRequestDTO personDTO) {
             // Solicita ao serviço a criação da pessoa
-            PersonResponse createdPerson = _personService.Create(personDTO);
+            PersonResponseDTO createdPerson = _personService.Create(personDTO);
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = createdPerson.Id },

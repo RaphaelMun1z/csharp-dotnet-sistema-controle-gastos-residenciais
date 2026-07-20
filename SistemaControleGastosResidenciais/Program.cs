@@ -12,8 +12,6 @@ builder.Services.AddControllers();
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
 // Adiciona os serviços
 builder.Services.AddScoped<IPersonService, PersonServiceImpl>();
-// Adiciona os repositórios
-builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 // Adiciona o repositório genérico
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 

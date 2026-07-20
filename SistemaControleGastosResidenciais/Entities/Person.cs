@@ -56,9 +56,7 @@ namespace SistemaControleGastosResidenciais.Entities {
         public Person(
             string name,
             DateOnly birthDate
-        ) {
-            // Gera um novo identificador único para a pessoa
-            Id = Guid.NewGuid();
+        ) : base(Guid.NewGuid()) { // Gera um novo identificador único para a entidade
             Name = name;
             BirthDate = birthDate;
         }

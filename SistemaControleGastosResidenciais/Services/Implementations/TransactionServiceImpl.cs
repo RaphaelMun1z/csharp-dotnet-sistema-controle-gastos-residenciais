@@ -2,7 +2,7 @@
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Enums;
-using SistemaControleGastosResidenciais.Mappings;
+using SistemaControleGastosResidenciais.Mappings.Implementations;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
@@ -10,6 +10,8 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
     public class TransactionServiceImpl : ITransactionService {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IRepository<Person> _personRepository;
+
+        private readonly TransactionMapper _transactionMapper = new TransactionMapper();
 
         // Recebe os repositórios por injeção de dependência
         public TransactionServiceImpl(
@@ -20,7 +22,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             _personRepository = personRepository;
         }
 
-        public TransactionResponse FindById(Guid id) {
+        public TransactionResponseDTO FindById(Guid id) {
             // Valida o ID informado
             if (id == Guid.Empty) {
                 throw new BadHttpRequestException("Informe um ID válido");
@@ -35,10 +37,10 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             }
 
             // Converte a entidade encontrada para DTO de resposta
-            return TransactionMapper.ToResponse(foundTransaction);
+            return _transactionMapper.ToResponse(foundTransaction);
         }
 
-        public PagedResponse<TransactionResponse> FindAll(int page, int pageSize) {
+        public PagedResponseDTO<TransactionResponseDTO> FindAll(int page, int pageSize) {
             // Valida os parâmetros de paginação
             ValidatePagination(page, pageSize);
 
@@ -54,12 +56,9 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             );
 
             // Converte as entidades encontradas para DTOs de resposta
-            List<TransactionResponse> transactionResponseList =
-                transactionList.Select(transaction =>
-                    TransactionMapper.ToResponse(transaction)
-                ).ToList();
+            List<TransactionResponseDTO> transactionResponseList = _transactionMapper.ToResponseList(transactionList);
 
-            return new PagedResponse<TransactionResponse> {
+            return new PagedResponseDTO<TransactionResponseDTO> {
                 Content = transactionResponseList,
                 Page = page,
                 PageSize = pageSize,
@@ -68,7 +67,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             };
         }
 
-        public PagedResponse<TransactionResponse> FindByPersonId(Guid personId, int page, int pageSize) {
+        public PagedResponseDTO<TransactionResponseDTO> FindByPersonId(Guid personId, int page, int pageSize) {
             // Valida o ID informado
             if (personId == Guid.Empty) {
                 throw new BadHttpRequestException("Informe um ID válido");
@@ -102,12 +101,9 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             );
 
             // Converte as entidades encontradas para DTOs de resposta
-            List<TransactionResponse> transactionResponseList =
-                transactionList.Select(transaction =>
-                    TransactionMapper.ToResponse(transaction)
-                ).ToList();
+            List<TransactionResponseDTO> transactionResponseList = _transactionMapper.ToResponseList(transactionList);
 
-            return new PagedResponse<TransactionResponse> {
+            return new PagedResponseDTO<TransactionResponseDTO> {
                 Content = transactionResponseList,
                 Page = page,
                 PageSize = pageSize,
@@ -116,7 +112,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             };
         }
 
-        public TransactionResponse Create(CreateTransactionRequest transactionDTO) {
+        public TransactionResponseDTO Create(CreateTransactionRequestDTO transactionDTO) {
             // Verifica se a pessoa informada existe
             Person? person = _personRepository.FindById(transactionDTO.PersonId);
 
@@ -132,18 +128,13 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
 
             // Cria uma nova transação
             // As validações dos atributos são realizadas pela própria entidade
-            Transaction newTransaction = new Transaction(
-                transactionDTO.PersonId,
-                transactionDTO.Amount,
-                transactionDTO.Type,
-                transactionDTO.Description
-            );
+            Transaction newTransaction = _transactionMapper.ToResponse(transactionDTO);
 
             // Persiste a transação no banco de dados
             Transaction savedTransaction = _transactionRepository.Create(newTransaction);
 
             // Converte a entidade persistida para DTO de resposta
-            return TransactionMapper.ToResponse(savedTransaction);
+            return _transactionMapper.ToResponse(savedTransaction);
         }
 
         private static void ValidatePagination(int page, int pageSize) {

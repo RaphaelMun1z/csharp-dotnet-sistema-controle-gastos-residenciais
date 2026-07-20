@@ -3,16 +3,16 @@ using SistemaControleGastosResidenciais.DTOs.Responses;
 
 namespace SistemaControleGastosResidenciais.Services.Interfaces {
     public interface ITransactionService {
-        TransactionResponse FindById(Guid id);
-        PagedResponse<TransactionResponse> FindAll(
+        TransactionResponseDTO FindById(Guid id);
+        PagedResponseDTO<TransactionResponseDTO> FindAll(
             int page,
             int pageSize
         );
-        PagedResponse<TransactionResponse> FindByPersonId(
+        PagedResponseDTO<TransactionResponseDTO> FindByPersonId(
             Guid personId,
             int page,
             int pageSize
         );
-        TransactionResponse Create(CreateTransactionRequest transactionDTO);
+        TransactionResponseDTO Create(CreateTransactionRequestDTO transactionDTO);
     }
 }

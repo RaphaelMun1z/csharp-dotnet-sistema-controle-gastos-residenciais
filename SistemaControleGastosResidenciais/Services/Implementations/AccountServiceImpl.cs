@@ -1,7 +1,7 @@
 ﻿using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
-using SistemaControleGastosResidenciais.Mappings;
+using SistemaControleGastosResidenciais.Mappings.Implementations;
 using SistemaControleGastosResidenciais.Repositories.Interfaces;
 using SistemaControleGastosResidenciais.Services.Interfaces;
 
@@ -9,6 +9,8 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
     public class AccountServiceImpl : IAccountService {
         private readonly IAccountRepository _accountRepository;
         private readonly IRepository<Person> _personRepository;
+
+        private readonly AccountMapper _accountMapper = new AccountMapper();
 
         // Recebe os repositórios por injeção de dependência
         public AccountServiceImpl(
@@ -19,7 +21,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             _personRepository = personRepository;
         }
 
-        public AccountResponse FindById(Guid id) {
+        public AccountResponseDTO FindById(Guid id) {
             // Valida o ID informado
             if (id == Guid.Empty) {
                 throw new BadHttpRequestException("Informe um ID válido");
@@ -34,10 +36,10 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             }
 
             // Converte a entidade encontrada para DTO de resposta
-            return AccountMapper.ToResponse(foundAccount);
+            return _accountMapper.ToResponse(foundAccount);
         }
 
-        public AccountResponse Create(CreateAccountRequest accountDTO) {
+        public AccountResponseDTO Create(CreateAccountRequestDTO accountDTO) {
             // Verifica se a pessoa informada existe
             Person? person = _personRepository.FindById(accountDTO.PersonId);
 
@@ -63,18 +65,14 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             }
 
             // Cria uma nova conta
-            // As validações dos atributos são realizadas pela própria entidade
-            Account newAccount = new Account(
-                accountDTO.PersonId,
-                accountDTO.Email,
-                accountDTO.Password
-            );
+            // Converte o DTO de criação para uma entidade Account
+            Account newAccount = _accountMapper.ToResponse(accountDTO);
 
             // Persiste a conta no banco de dados
             Account savedAccount = _accountRepository.Create(newAccount);
 
             // Converte a entidade persistida para DTO de resposta
-            return AccountMapper.ToResponse(savedAccount);
+            return _accountMapper.ToResponse(savedAccount);
         }
 
         public void Delete(Guid id) {

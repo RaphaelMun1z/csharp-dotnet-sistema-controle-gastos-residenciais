@@ -18,31 +18,31 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet]
-        public ActionResult<PagedResponse<TransactionResponse>> GetAll(
+        public ActionResult<PagedResponseDTO<TransactionResponseDTO>> GetAll(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10
         ) {
             // Chama o método de busca presente no serviço, passando os parâmetros de paginação
-            PagedResponse<TransactionResponse> transactions = _transactionService.FindAll(page, pageSize);
+            PagedResponseDTO<TransactionResponseDTO> transactions = _transactionService.FindAll(page, pageSize);
             return Ok(transactions);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<TransactionResponse> GetById(Guid id) {
+        public ActionResult<TransactionResponseDTO> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da transação a ser buscada
             // Retorna a transação encontrada, com status 200, indicando que a operação foi bem sucedida
-            TransactionResponse transactionFound = _transactionService.FindById(id);
+            TransactionResponseDTO transactionFound = _transactionService.FindById(id);
             return Ok(transactionFound);
         }
 
         [HttpGet("person/{personId}")]
-        public ActionResult<PagedResponse<TransactionResponse>> GetByPersonId(
+        public ActionResult<PagedResponseDTO<TransactionResponseDTO>> GetByPersonId(
             Guid personId,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10
         ) {
             // Chama o método de busca presente no serviço, passando o ID da pessoa e os parâmetros de paginação
-            PagedResponse<TransactionResponse> transactions =
+            PagedResponseDTO<TransactionResponseDTO> transactions =
                 _transactionService.FindByPersonId(
                     personId,
                     page,
@@ -52,9 +52,9 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpPost]
-        public ActionResult<TransactionResponse> Create([FromBody] CreateTransactionRequest transactionDTO) {
+        public ActionResult<TransactionResponseDTO> Create([FromBody] CreateTransactionRequestDTO transactionDTO) {
             // Solicita ao serviço a criação da transação
-            TransactionResponse createdTransaction = _transactionService.Create(transactionDTO);
+            TransactionResponseDTO createdTransaction = _transactionService.Create(transactionDTO);
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = createdTransaction.Id },

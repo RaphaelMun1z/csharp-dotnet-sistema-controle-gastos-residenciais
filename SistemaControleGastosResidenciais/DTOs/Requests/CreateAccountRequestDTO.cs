@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace SistemaControleGastosResidenciais.DTOs.Requests {
-    public record CreateAccountRequest(
+    public record CreateAccountRequestDTO(
         Guid PersonId,
 
         [Required(ErrorMessage = "O e-mail é obrigatório.")]

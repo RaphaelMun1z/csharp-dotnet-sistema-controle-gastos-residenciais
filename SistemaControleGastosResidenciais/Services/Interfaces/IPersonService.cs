@@ -3,12 +3,12 @@ using SistemaControleGastosResidenciais.DTOs.Responses;
 
 namespace SistemaControleGastosResidenciais.Services.Interfaces {
     public interface IPersonService {
-        PersonResponse FindById(Guid id);
-        PagedResponse<PersonResponse> FindAll(
+        PersonResponseDTO FindById(Guid id);
+        PagedResponseDTO<PersonResponseDTO> FindAll(
             int page,
             int pageSize
         );
-        PersonResponse Create(CreatePersonRequest personDTO);
+        PersonResponseDTO Create(CreatePersonRequestDTO personDTO);
         void Delete(Guid id);
     }
 }
