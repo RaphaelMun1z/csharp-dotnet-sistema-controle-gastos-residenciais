@@ -11,20 +11,25 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
         private readonly ITransactionRepository _transactionRepository;
         private readonly IRepository<Person> _personRepository;
 
+        private readonly ILogger<TransactionServiceImpl> _logger;
+
         private readonly TransactionMapper _transactionMapper = new TransactionMapper();
 
         // Recebe os repositórios por injeção de dependência
         public TransactionServiceImpl(
             ITransactionRepository transactionRepository,
-            IRepository<Person> personRepository
+            IRepository<Person> personRepository,
+            ILogger<TransactionServiceImpl> logger
         ) {
             _transactionRepository = transactionRepository;
             _personRepository = personRepository;
+            _logger = logger;
         }
 
         public TransactionResponseDTO FindById(Guid id) {
             // Valida o ID informado
             if (id == Guid.Empty) {
+                _logger.LogWarning("Tentativa de buscar transação com ID inválido");
                 throw new BadHttpRequestException("Informe um ID válido");
             }
 
@@ -33,6 +38,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
 
             // Se a transação não for encontrada, lança uma exceção
             if (foundTransaction == null) {
+                _logger.LogWarning("Transação não encontrada para o ID {TransactionId}", id);
                 throw new KeyNotFoundException("Transação não encontrada");
             }
 
@@ -70,6 +76,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
         public PagedResponseDTO<TransactionResponseDTO> FindByPersonId(Guid personId, int page, int pageSize) {
             // Valida o ID informado
             if (personId == Guid.Empty) {
+                _logger.LogWarning("Tentativa de buscar transações com ID de pessoa inválido");
                 throw new BadHttpRequestException("Informe um ID válido");
             }
 
@@ -81,6 +88,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
 
             // Se a pessoa não for encontrada, lança uma exceção
             if (person == null) {
+                _logger.LogWarning("Tentativa de buscar transações para pessoa inexistente {PersonId}", personId);
                 throw new KeyNotFoundException("Pessoa não encontrada");
             }
 
@@ -118,11 +126,13 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
 
             // Se a pessoa não for encontrada, lança uma exceção
             if (person == null) {
+                _logger.LogWarning("Tentativa de criar transação para pessoa inexistente {PersonId}", transactionDTO.PersonId);
                 throw new KeyNotFoundException("Pessoa não encontrada");
             }
 
             // Pessoas menores de 18 anos podem registrar apenas despesas
             if (person.Age < 18 && transactionDTO.Type == TransactionTypeEnum.Revenue) {
+                _logger.LogWarning("Tentativa de registrar receita para pessoa menor de idade {PersonId}", transactionDTO.PersonId);
                 throw new InvalidOperationException("Pessoas menores de 18 anos podem registrar apenas despesas");
             }
 
@@ -133,18 +143,22 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             // Persiste a transação no banco de dados
             Transaction savedTransaction = _transactionRepository.Create(newTransaction);
 
+            _logger.LogInformation("Transação criada com sucesso com ID {TransactionId} para a pessoa {PersonId}", savedTransaction.Id, savedTransaction.PersonId);
+
             // Converte a entidade persistida para DTO de resposta
             return _transactionMapper.ToResponse(savedTransaction);
         }
 
-        private static void ValidatePagination(int page, int pageSize) {
+        private void ValidatePagination(int page, int pageSize) {
             // Valida o número da página informado
             if (page < 1) {
+                _logger.LogWarning("Tentativa de buscar transações com página inválida {Page}", page);
                 throw new BadHttpRequestException("A página deve ser maior ou igual a 1");
             }
 
             // Valida a quantidade de registros por página
             if (pageSize < 1 || pageSize > 100) {
+                _logger.LogWarning("Tentativa de buscar transações com tamanho de página inválido {PageSize}", pageSize);
                 throw new BadHttpRequestException("A quantidade de registros por página deve estar entre 1 e 100");
             }
         }
