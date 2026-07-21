@@ -1,0 +1,20 @@
+INSERT INTO dbo.tb_accounts (
+    Id,
+    PersonId,
+    Email,
+    Password
+)
+VALUES
+(
+    'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa',
+    '11111111-1111-1111-1111-111111111111',
+    'joao@email.com',
+    'mock-password'
+),
+(
+    'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb',
+    '22222222-2222-2222-2222-222222222222',
+    'maria@email.com',
+    'mock-password'
+);
+GO
