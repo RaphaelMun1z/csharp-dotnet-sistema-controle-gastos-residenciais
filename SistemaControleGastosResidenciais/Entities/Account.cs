@@ -49,9 +49,13 @@ namespace SistemaControleGastosResidenciais.Entities {
             if (personId == Guid.Empty) {
                 throw new ArgumentException("Informe um identificador de pessoa válido", nameof(personId));
             }
-            
+
             PersonId = personId;
             Email = email;
+            Password = password;
+        }
+
+        public void SetPassword(string password) {
             Password = password;
         }
 

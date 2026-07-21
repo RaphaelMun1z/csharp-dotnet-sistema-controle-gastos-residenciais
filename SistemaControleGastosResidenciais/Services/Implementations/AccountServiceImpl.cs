@@ -1,4 +1,5 @@
-﻿using SistemaControleGastosResidenciais.DTOs.Requests;
+﻿using Microsoft.AspNetCore.Identity;
+using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Mappings.Implementations;
@@ -9,6 +10,7 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
     public class AccountServiceImpl : IAccountService {
         private readonly IAccountRepository _accountRepository;
         private readonly IRepository<Person> _personRepository;
+        private readonly IPasswordHasher<Account> _passwordHasher;
 
         private readonly ILogger<AccountServiceImpl> _logger;
 
@@ -18,10 +20,12 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
         public AccountServiceImpl(
             IAccountRepository accountRepository,
             IRepository<Person> personRepository,
+            IPasswordHasher<Account> passwordHasher,
             ILogger<AccountServiceImpl> logger
         ) {
             _accountRepository = accountRepository;
             _personRepository = personRepository;
+            _passwordHasher = passwordHasher;
             _logger = logger;
         }
 
@@ -76,6 +80,14 @@ namespace SistemaControleGastosResidenciais.Services.Implementations {
             // Cria uma nova conta
             // Converte o DTO de criação para uma entidade Account
             Account newAccount = _accountMapper.ToResponse(accountDTO);
+
+            // Gera o hash da senha usando o PasswordHasher
+            string passwordHash = _passwordHasher.HashPassword(
+                newAccount,
+                accountDTO.Password
+            );
+
+            newAccount.SetPassword(passwordHash);
 
             // Persiste a conta no banco de dados
             Account savedAccount = _accountRepository.Create(newAccount);
