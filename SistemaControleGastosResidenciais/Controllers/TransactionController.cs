@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Hateoas.Assemblers;
@@ -11,6 +12,8 @@ using SistemaControleGastosResidenciais.Services.Interfaces;
 namespace SistemaControleGastosResidenciais.Controllers {
     [ApiController]
     [Route("api/v1/transactions")]
+    [Authorize]
+    [Tags("Transações")]
     public class TransactionController : ControllerBase {
         private readonly ITransactionService _transactionService;
         private readonly TransactionHateoasAssembler _transactionHateoasAssembler;

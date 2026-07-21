@@ -1,16 +1,19 @@
 ﻿// Utilizei um pré-fixo "api" nas endpoints da API, para indicar que se trata de uma API Rest
 // Também utilizei a versão "v1" para indicar que é a primeira versão da API
 // Isso permite que futuras versões da API sejam lançadas sem quebrar a compatibilidade com clientes existentes
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
-using SistemaControleGastosResidenciais.Services.Interfaces;
 using SistemaControleGastosResidenciais.Hateoas.Assemblers;
 using SistemaControleGastosResidenciais.Hateoas.Models;
+using SistemaControleGastosResidenciais.Services.Interfaces;
 
 namespace SistemaControleGastosResidenciais.Controllers {
     [ApiController]
     [Route("api/v1/accounts")]
+    [Authorize]
+    [Tags("Contas")]
     public class AccountController : ControllerBase {
         private readonly IAccountService _accountService;
         private readonly AccountHateoasAssembler _accountHateoasAssembler;
