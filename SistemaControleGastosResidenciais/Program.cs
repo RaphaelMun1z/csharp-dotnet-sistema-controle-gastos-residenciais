@@ -1,6 +1,11 @@
+using Microsoft.AspNetCore.Identity;
+using SistemaControleGastosResidenciais.Authentication.Implementations;
+using SistemaControleGastosResidenciais.Authentication.Interfaces;
+using SistemaControleGastosResidenciais.Authentication.Models;
 using SistemaControleGastosResidenciais.Configurations;
 using SistemaControleGastosResidenciais.Configurations.Scalar;
 using SistemaControleGastosResidenciais.Configurations.Swagger;
+using SistemaControleGastosResidenciais.Entities;
 using SistemaControleGastosResidenciais.Exceptions;
 using SistemaControleGastosResidenciais.Hateoas.Assemblers;
 using SistemaControleGastosResidenciais.Repositories.Implementations;
@@ -26,7 +31,7 @@ builder.Services.AddCorsConfiguration(builder.Configuration);
 // Adiciona a configuração das rotas
 builder.Services.AddRouteConfig();
 
-// Adiciona a configuração do AutoMapper
+// Adiciona as dependências necessárias para geração dos links HATEOAS
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<PersonHateoasAssembler>();
 builder.Services.AddScoped<AccountHateoasAssembler>();
@@ -36,6 +41,13 @@ builder.Services.AddScoped<TransactionHateoasAssembler>();
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
 // Adiciona a configuração do Evolve para migrações de banco de dados
 builder.Services.AddEvolveConfiguration(builder.Configuration, builder.Environment);
+
+// Adiciona a configuração do JWT para autenticação baseada em tokens
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddAuthenticationConfiguration(builder.Configuration);
+builder.Services.AddScoped<ITokenService, TokenServiceImpl>();
+builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
+builder.Services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
 
 // Adiciona os serviços
 builder.Services.AddScoped<IPersonService, PersonServiceImpl>();
@@ -58,6 +70,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 app.UseCorsConfiguration();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.UseSwaggerSpecification();

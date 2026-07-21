@@ -8,6 +8,7 @@ services:
         environment:
             ASPNETCORE_ENVIRONMENT: Development
             ConnectionStrings__MSSQLServerSQLConnectionString: "Server=sqlserver,1433;Database=db_household_expense_tracking_development;User Id=sa;Password=Database123@;TrustServerCertificate=True;"
+            Jwt__SecretKey: "SistemaControleGastosResidenciais-JWT-SecretKey-2026-Segura"
         depends_on:
             sqlserver:
                 condition: service_healthy
