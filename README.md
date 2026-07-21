@@ -4,139 +4,311 @@
   <img src="https://img.shields.io/badge/status-em%20desenvolvimento-F59E0B?style=for-the-badge" alt="Status: Em desenvolvimento">
   <img src="https://img.shields.io/badge/C%23-.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt="C# e .NET">
   <img src="https://img.shields.io/badge/React-TypeScript-3178C6?style=for-the-badge&logo=react&logoColor=white" alt="React e TypeScript">
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/SQL%20Server-Database-CC2927?style=for-the-badge&logo=microsoftsqlserver&logoColor=white" alt="SQL Server">
+  <img src="https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
 </div>
 
-Sistema web para controle de gastos residenciais, permitindo o cadastro de pessoas e transações financeiras, além da consulta de receitas, despesas e saldos individuais e gerais. A aplicação também contará com autenticação de usuários por meio de contas associadas às pessoas cadastradas.
+Sistema web para controle de gastos residenciais, com cadastro de pessoas, contas e transações, aplicação de regras de negócio e persistência relacional.
 
-> **Versão atual:** `v0.0.1`<br>
+> **Versão atual:** `v0.0.1`  
 > **Estágio:** Em desenvolvimento
 
-## Arquitetura
+## Sumário
 
-O backend segue uma arquitetura em camadas, separando as responsabilidades relacionadas às requisições HTTP, regras de negócio, acesso aos dados e persistência. O Entity Framework Core realiza o mapeamento das entidades e a comunicação com o PostgreSQL.
+- [Visão geral](#visão-geral)
+- [Recursos utilizados](#recursos-utilizados)
+- [Arquitetura e padrões](#arquitetura-e-padrões)
+- [Decisões técnicas](#decisões-técnicas)
+- [Documentação](#documentação)
+- [Como executar](#como-executar)
+- [Documentação da API](#documentação-da-api)
+- [Relato de bugs](#relato-de-bugs)
 
-### Domínios
+## Visão geral
 
-| Categoria    | Componentes          | Papel no sistema                                               |
-| :----------- | :------------------- | :------------------------------------------------------------- |
-| **Core**     | Pessoas e transações | Concentra o cadastro e o controle dos gastos residenciais      |
-| **Suporte**  | Consulta de totais   | Calcula receitas, despesas, saldos individuais e totais gerais |
-| **Genérico** | Conta e autenticação | Fornece acesso autenticado às funcionalidades da aplicação     |
+A aplicação foi estruturada com foco em separação de responsabilidades, manutenção e evolução do código.
 
-### Documentação visual
-
-Os diagramas abaixo registram os requisitos e a modelagem inicial do sistema.
-
-<div align="center">
-  <img src="./docs/diagrama-casos-de-uso-v0.0.1.png" width="49%" alt="Diagrama de casos de uso">
-  <img src="./docs/diagrama-de-classes-v0.0.1.png" width="49%" alt="Diagrama de classes">
-</div>
+O backend utiliza ASP.NET Core, Entity Framework Core e SQL Server. A interface será desenvolvida com React e TypeScript.
 
 <div align="center">
-  <img src="./docs/modelagem-banco-v0.0.1.png" width="49%" alt="Modelagem do banco de dados">
-  <img src="./docs/arquitetura-aplicacao-v0.0.1.png" width="49%" alt="Arquitetura da aplicação">
+  <img src="./docs/ModeloDominio.png" width="80%" alt="Visão geral do sistema">
 </div>
 
-## Portas e serviços
+## Recursos utilizados
 
-### Serviços e persistência
+| Recurso | Aplicação no projeto | Justificativa |
+| :--- | :--- | :--- |
+| **C# / .NET 10** | Backend | Ecossistema principal utilizado para construção e execução da aplicação |
+| **ASP.NET Core** | API REST | Estrutura a camada HTTP, injeção de dependências e middlewares |
+| **Entity Framework Core** | Persistência | Realiza o mapeamento objeto-relacional e acesso ao banco |
+| **SQL Server** | Banco de dados | Armazena pessoas, contas e transações em modelo relacional |
+| **React + TypeScript** | Frontend | Permite construir a interface com componentes e tipagem estática |
+| **Swagger / OpenAPI** | Contrato da API | Documenta os endpoints e permite visualizar a especificação OpenAPI |
+| **Scalar** | Exploração da API | Disponibiliza uma segunda interface para consultar o mesmo contrato OpenAPI |
+| **Docker** | Containerização | Padroniza a execução da aplicação em diferentes ambientes |
+| **Docker Compose** | Ambiente local | Facilita a execução conjunta da API e dos serviços dependentes |
+| **Git / GitHub** | Versionamento | Gerencia histórico, branches, commits e evolução do projeto |
 
-| Status do serviço | Status do banco | Serviço        | Porta da aplicação | Persistência | Porta local do banco | Database  |
-| :---------------: | :-------------: | :------------- | :-----------------: | :----------- | :------------------: | :-------- |
-|        🔴         |       🔴        | Backend .NET   |          —          | PostgreSQL   |        `5432`        | A definir |
-|        🔴         |        —        | Frontend React |       `5173`        | —            |          —           | —         |
+## Arquitetura e padrões
 
-> As portas e configurações poderão ser atualizadas conforme a evolução da aplicação.
+O backend segue uma arquitetura em camadas:
 
-## Stack tecnológica
+<div align="center">
+  <img src="./docs/img/arquitetura-aplicacao.png" width="80%" alt="Arquitetura da aplicação">
+</div>
 
-### Backend
+### Padrões utilizados
 
-- **C#:** linguagem utilizada no desenvolvimento do backend.
-- **.NET:** plataforma utilizada para construção e execução da aplicação.
-- **ASP.NET Core:** base para criação das APIs e processamento das requisições HTTP.
-- **Entity Framework Core:** realiza o acesso, mapeamento e persistência dos dados.
-- **PostgreSQL:** banco de dados relacional utilizado pela aplicação.
+| Padrão | Aplicação |
+| :--- | :--- |
+| **Layered Architecture** | Separa entrada HTTP, regras de negócio e persistência |
+| **Repository Pattern** | Encapsula o acesso aos dados |
+| **Generic Repository** | Centraliza operações comuns entre entidades |
+| **Service Layer** | Mantém regras de negócio fora dos controllers |
+| **DTO Pattern** | Separa entidades internas dos contratos da API |
+| **Mapper** | Realiza conversões entre DTOs e entidades |
+| **Dependency Injection** | Reduz o acoplamento entre serviços e repositórios |
+| **Global Exception Handler** | Centraliza a conversão de exceções em respostas HTTP padronizadas |
 
-### Frontend
+## Decisões técnicas
 
-- **React:** biblioteca utilizada para construção da interface web.
-- **TypeScript:** adiciona tipagem estática ao desenvolvimento do frontend.
+### SQL Server como banco relacional
 
-### Infraestrutura
+Foi utilizado SQL Server para manter consistência com o ecossistema .NET.
 
-- **PostgreSQL:** banco de dados utilizado para persistência das pessoas, contas e transações.
+O modelo relacional é adequado ao domínio, que possui relações bem definidas entre pessoas, contas e transações.
 
-## Como executar localmente
+<div align="center">
+  <img src="./docs/img/modelagem-banco.png" width="75%" alt="Modelagem do banco de dados">
+</div>
 
-### Pré-requisitos
+### Identificadores gerados pela aplicação
 
-- .NET SDK;
-- Node.js;
-- PostgreSQL;
-- Git.
+As entidades utilizam `Guid` como identificador.
 
-### 1. Clone o repositório
+Os IDs são gerados pela própria aplicação antes da persistência, evitando dependência do banco para geração de identidade e permitindo que as entidades já existam com um identificador válido antes de serem salvas.
+
+### Repositório genérico com especializações
+
+As operações comuns de persistência foram concentradas em um repositório genérico.
+
+Quando uma entidade possui consultas específicas, é utilizado um repositório especializado.
+
+```text
+IRepository<T>
+    ├── operações comuns
+    │
+    ├── IAccountRepository
+    │       └── consultas específicas de conta
+    │
+    └── ITransactionRepository
+            └── consultas específicas de transação
+```
+
+Essa decisão evita duplicação sem limitar consultas específicas do domínio.
+
+### DTOs separados das entidades
+
+As entidades não são expostas diretamente pela API.
+
+Isso permite controlar os dados recebidos e retornados sem acoplar o contrato HTTP ao modelo de persistência.
+
+### Regras de negócio na camada de serviço
+
+Regras como a restrição de receitas para menores de 18 anos são validadas na aplicação antes da persistência.
+
+A separação evita que controllers concentrem regras que pertencem ao domínio.
+
+### Integridade também protegida pelo banco
+
+Algumas regras críticas também são reforçadas no banco de dados por constraints, relacionamentos e outras validações.
+
+A aplicação continua sendo responsável pela validação principal, enquanto o banco funciona como uma camada adicional de proteção da integridade dos dados.
+
+### Exclusão em cascata
+
+Os relacionamentos foram configurados para que registros dependentes sejam removidos quando necessário.
+
+```text
+Person
+ ├── Account
+ └── Transactions
+```
+
+A remoção de uma pessoa também trata os registros diretamente dependentes dela, evitando dados órfãos.
+
+### Tratamento global de exceções
+
+As exceções da aplicação são tratadas de forma centralizada.
+
+```text
+Exception
+    ↓
+GlobalExceptionHandler
+    ↓
+ProblemDetails
+    ↓
+Resposta HTTP
+```
+
+Isso evita blocos repetitivos de `try/catch` nos controllers e mantém um formato consistente de erro.
+
+### Swagger, OpenAPI e Scalar
+
+A especificação OpenAPI é gerada uma única vez.
+
+```text
+API
+   ↓
+OpenAPI JSON
+   ├── Swagger UI
+   └── Scalar
+```
+
+Swagger UI e Scalar apresentam interfaces diferentes sobre o mesmo contrato, evitando duplicação de documentação.
+
+### Documentação desacoplada dos controllers
+
+Descrições detalhadas da API são configuradas por `OperationFilter`, evitando sobrecarregar os controllers com textos extensos de documentação.
+
+```text
+Controller
+→ rota e comportamento HTTP
+
+OperationFilter
+→ summary e descrição da documentação
+```
+
+### Containerização
+
+A API possui `Dockerfile` com build em múltiplos estágios.
+
+```text
+.NET SDK
+   ↓
+Restore
+   ↓
+Build
+   ↓
+Publish
+   ↓
+ASP.NET Runtime
+```
+
+A imagem final utiliza apenas o runtime necessário para execução, enquanto o SDK fica restrito à etapa de compilação.
+
+## Documentação
+
+A documentação detalhada está concentrada em:
+
+```text
+docs/
+├── arquitetura/
+├── banco-de-dados/
+├── diagramas/
+├── requisitos/
+├── decisoes-tecnicas/
+└── img/
+```
+
+Nessa pasta podem ficar diagramas UML, modelagem do banco, casos de uso, requisitos, decisões arquiteturais e explicações detalhadas dos padrões utilizados.
+
+## Como executar
+
+O projeto pode ser executado manualmente ou com Docker Compose.
+
+### Opção 1 — Docker Compose
+
+Pré-requisitos:
+
+```text
+Docker
+Docker Compose
+```
+
+Clone o repositório:
 
 ```bash
 git clone https://github.com/RaphaelMun1z/csharp-dotnet-sistema-controle-gastos-residenciais.git
-````
-
-Acesse o diretório:
-
-```bash
 cd csharp-dotnet-sistema-controle-gastos-residenciais
 ```
 
-### 2. Configure o banco de dados
-
-Configure a conexão com o PostgreSQL no arquivo `appsettings.json` de acordo com o ambiente local.
-
-### 3. Inicie o backend
-
-Acesse o diretório do projeto .NET e execute:
+Construa e inicie os containers:
 
 ```bash
+docker compose up -d --build
+```
+
+Verifique os serviços:
+
+```bash
+docker compose ps
+```
+
+Acompanhe os logs:
+
+```bash
+docker compose logs -f
+```
+
+Para encerrar:
+
+```bash
+docker compose down
+```
+
+### Opção 2 — Execução manual
+
+Pré-requisitos:
+
+```text
+.NET 10 SDK
+SQL Server
+Node.js
+Git
+```
+
+Clone o projeto:
+
+```bash
+git clone https://github.com/RaphaelMun1z/csharp-dotnet-sistema-controle-gastos-residenciais.git
+cd csharp-dotnet-sistema-controle-gastos-residenciais
+```
+
+Configure a conexão com o SQL Server no ambiente local.
+
+Depois execute o backend:
+
+```bash
+cd SistemaControleGastosResidenciais
+dotnet restore
 dotnet run
 ```
 
-### 4. Inicie o frontend
-
-Acesse o diretório da aplicação React, instale as dependências e execute:
+Para o frontend:
 
 ```bash
 npm install
 npm run dev
 ```
 
-### 5. Acesse a aplicação
+## Documentação da API
 
-Abra no navegador o endereço disponibilizado pelo servidor de desenvolvimento do frontend.
+| Interface | Endereço |
+| :--- | :--- |
+| **Swagger UI** | `https://localhost:7201/swagger-ui/index.html` |
+| **Scalar** | `https://localhost:7201/scalar` |
+| **OpenAPI JSON** | `https://localhost:7201/swagger/v1/swagger.json` |
 
-## Endpoints de apoio
+<div align="center">
+  <img src="./docs/img/swagger.png" width="48%" alt="Swagger UI">
+  <img src="./docs/img/scalar.png" width="48%" alt="Scalar">
+</div>
 
-| Recurso     | URL                     |
-| :---------- | :---------------------- |
-| Backend API | A definir               |
-| Frontend    | `http://localhost:5173` |
+> Quando executada por Docker, a porta e o protocolo utilizados dependem do mapeamento definido no `docker-compose.yml`.
 
 ## Relato de bugs
 
-Encontrou um comportamento inesperado? [Crie uma issue no repositório](https://github.com/RaphaelMun1z/csharp-dotnet-sistema-controle-gastos-residenciais/issues/new) com uma descrição objetiva, os passos para reproduzir, o resultado esperado e, quando possível, logs ou capturas de tela. Antes de abrir uma nova issue, verifique se o problema já foi relatado.
+Encontrou um comportamento inesperado?
 
-## Interface da aplicação
-
-<div align="center">
-  <img src="./preview-frontend/preview1.png" width="48%" alt="Interface da aplicação">
-  &nbsp;&nbsp;
-  <img src="./preview-frontend/preview2.png" width="48%" alt="Interface da aplicação">
-</div>
-
-<br>
-
-<div align="center">
-  <img src="./preview-frontend/preview3.png" width="48%" alt="Interface da aplicação">
-  &nbsp;&nbsp;
-  <img src="./preview-frontend/preview4.png" width="48%" alt="Interface da aplicação">
-</div>
+[Crie uma issue no repositório](https://github.com/RaphaelMun1z/csharp-dotnet-sistema-controle-gastos-residenciais/issues/new) descrevendo o problema, os passos para reprodução e o resultado esperado.
