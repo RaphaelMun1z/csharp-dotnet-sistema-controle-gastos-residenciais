@@ -18,6 +18,11 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet]
+        [ProducesResponseType(
+            StatusCodes.Status200OK,
+            Type = typeof(PagedResponseDTO<PersonResponseDTO>)
+        )]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<PagedResponseDTO<PersonResponseDTO>> GetAll(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10
@@ -28,6 +33,9 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PersonResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<PersonResponseDTO> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da pessoa a ser buscada
             // Retorna a pessoa encontrada, com status 200, indicando que a operação foi bem sucedida
@@ -36,6 +44,8 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(PersonResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<PersonResponseDTO> Create([FromBody] CreatePersonRequestDTO personDTO) {
             // Solicita ao serviço a criação da pessoa
             PersonResponseDTO createdPerson = _personService.Create(personDTO);
@@ -47,6 +57,9 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteById(Guid id) {
             // Solicita ao serviço a exclusão da pessoa pelo ID
             _personService.Delete(id);

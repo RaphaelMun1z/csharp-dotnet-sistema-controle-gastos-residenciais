@@ -18,6 +18,9 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AccountResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<AccountResponseDTO> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da conta a ser buscada
             // Retorna a conta encontrada, com status 200, indicando que a operação foi bem sucedida
@@ -26,6 +29,10 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(AccountResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public ActionResult<AccountResponseDTO> Create([FromBody] CreateAccountRequestDTO accountDTO) {
             // Solicita ao serviço a criação da conta
             AccountResponseDTO createdAccount = _accountService.Create(accountDTO);
@@ -37,6 +44,9 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteById(Guid id) {
             // Solicita ao serviço a exclusão da conta pelo ID
             _accountService.Delete(id);

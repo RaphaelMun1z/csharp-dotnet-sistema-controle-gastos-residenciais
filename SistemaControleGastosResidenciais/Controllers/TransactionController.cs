@@ -18,6 +18,11 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet]
+        [ProducesResponseType(
+            StatusCodes.Status200OK,
+            Type = typeof(PagedResponseDTO<TransactionResponseDTO>)
+        )]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<PagedResponseDTO<TransactionResponseDTO>> GetAll(
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10
@@ -28,6 +33,12 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(
+            StatusCodes.Status200OK,
+            Type = typeof(TransactionResponseDTO)
+        )]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<TransactionResponseDTO> GetById(Guid id) {
             // Chama o método de busca presente no serviço, passando o ID da transação a ser buscada
             // Retorna a transação encontrada, com status 200, indicando que a operação foi bem sucedida
@@ -36,6 +47,12 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpGet("person/{personId}")]
+        [ProducesResponseType(
+            StatusCodes.Status200OK,
+            Type = typeof(PagedResponseDTO<TransactionResponseDTO>)
+        )]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<PagedResponseDTO<TransactionResponseDTO>> GetByPersonId(
             Guid personId,
             [FromQuery] int page = 1,
@@ -52,6 +69,13 @@ namespace SistemaControleGastosResidenciais.Controllers {
         }
 
         [HttpPost]
+        [ProducesResponseType(
+            StatusCodes.Status201Created,
+            Type = typeof(TransactionResponseDTO)
+        )]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public ActionResult<TransactionResponseDTO> Create([FromBody] CreateTransactionRequestDTO transactionDTO) {
             // Solicita ao serviço a criação da transação
             TransactionResponseDTO createdTransaction = _transactionService.Create(transactionDTO);
