@@ -36,12 +36,13 @@ namespace SistemaControleGastosResidenciais.Controllers {
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<PagedResponseDTO<PersonResponseDTO>> GetAll(
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null
         ) {
             _logger.LogDebug("Buscando pessoas com paginação: página {Page}, tamanho {PageSize}", page, pageSize);
 
             // Chama o método de busca presente no serviço, passando os parâmetros de paginação
-            PagedResponseDTO<PersonResponseDTO> people = _personService.FindAll(page, pageSize);
+            PagedResponseDTO<PersonResponseDTO> people = _personService.FindAll(page, pageSize, search);
             return Ok(people);
         }
 

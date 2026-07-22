@@ -7,7 +7,7 @@ using SistemaControleGastosResidenciais.Services.Interfaces;
 
 namespace SistemaControleGastosResidenciais.Services.Impl {
     public class PersonServiceImpl : IPersonService {
-        private readonly IRepository<Person> _personRepository;
+        private readonly IPersonRepository _personRepository;
 
         private readonly ILogger<PersonServiceImpl> _logger;
 
@@ -15,14 +15,14 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
 
         // Recebe o repositório por injeção de dependência
         public PersonServiceImpl(
-            IRepository<Person> personRepository,
+            IPersonRepository personRepository,
             ILogger<PersonServiceImpl> logger
         ) {
             _personRepository = personRepository;
             _logger = logger;
         }
 
-        public PagedResponseDTO<PersonResponseDTO> FindAll(int page, int pageSize) {
+        public PagedResponseDTO<PersonResponseDTO> FindAll(int page, int pageSize, string? search) {
             // Valida os parâmetros de paginação
             if (page < 1) {
                 _logger.LogWarning("Tentativa de buscar pessoas com página inválida {Page}", page);
@@ -35,10 +35,10 @@ namespace SistemaControleGastosResidenciais.Services.Impl {
             }
 
             // Busca somente os registros pertencentes à página solicitada
-            List<Person> peopleList = _personRepository.FindAll(page, pageSize);
+            List<Person> peopleList = _personRepository.FindAll(page, pageSize, search);
 
-            // Busca a quantidade total de pessoas cadastradas
-            int totalElements = _personRepository.Count();
+            // Busca a quantidade total de pessoas considerando o filtro informado
+            int totalElements = _personRepository.Count(search);
 
             // Calcula a quantidade total de páginas
             int totalPages = (int)Math.Ceiling(totalElements / (double)pageSize);

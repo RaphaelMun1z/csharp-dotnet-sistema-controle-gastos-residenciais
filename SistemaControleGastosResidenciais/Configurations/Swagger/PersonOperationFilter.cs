@@ -20,7 +20,27 @@ namespace SistemaControleGastosResidenciais.Configurations.Swagger {
                 case "GetAll":
                     operation.Summary = "Lista todas as pessoas";
                     operation.Description =
-                        "Retorna uma lista paginada com as pessoas cadastradas no sistema";
+                        "Retorna uma lista paginada com as pessoas cadastradas no sistema. " +
+                        "Permite filtrar os resultados pelo nome através do parâmetro de busca";
+
+                    if (operation.Parameters != null) {
+                        foreach (OpenApiParameter parameter in operation.Parameters) {
+                            switch (parameter.Name) {
+                                case "page":
+                                    parameter.Description = "Número da página a ser consultada";
+                                    break;
+
+                                case "pageSize":
+                                    parameter.Description = "Quantidade de registros por página, entre 1 e 100";
+                                    break;
+
+                                case "search":
+                                    parameter.Description = "Texto utilizado para filtrar pessoas pelo nome";
+                                    break;
+                            }
+                        }
+                    }
+
                     break;
 
                 case "GetById":
