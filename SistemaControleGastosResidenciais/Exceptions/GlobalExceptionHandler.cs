@@ -22,7 +22,7 @@ namespace SistemaControleGastosResidenciais.Exceptions {
             ProblemDetails problemDetails = new ProblemDetails {
                 Status = statusCode,
                 Title = GetTitle(statusCode),
-                Detail = exception.Message,
+                Detail = GetDetail(exception, statusCode),
                 Instance = httpContext.Request.Path
             };
 
@@ -40,10 +40,42 @@ namespace SistemaControleGastosResidenciais.Exceptions {
         private static string GetTitle(int statusCode) {
             return statusCode switch {
                 StatusCodes.Status400BadRequest => "Requisição inválida",
+                StatusCodes.Status401Unauthorized => "Não autorizado",
+                StatusCodes.Status403Forbidden => "Acesso negado",
                 StatusCodes.Status404NotFound => "Recurso não encontrado",
                 StatusCodes.Status409Conflict => "Conflito na operação",
                 _ => "Erro interno do servidor"
             };
+        }
+
+        private static string GetDetail(
+            Exception exception,
+            int statusCode
+        ) {
+            // Evita expor detalhes internos em erros inesperados
+            if (statusCode == StatusCodes.Status500InternalServerError) {
+                return "Ocorreu um erro inesperado ao processar a solicitação";
+            }
+
+            // Remove informações técnicas adicionadas por ArgumentException
+            if (exception is ArgumentException argumentException) {
+                return CleanArgumentExceptionMessage(argumentException.Message);
+            }
+
+            return exception.Message;
+        }
+
+        private static string CleanArgumentExceptionMessage(string message) {
+            int parameterIndex = message.IndexOf(
+                " (Parameter ",
+                StringComparison.Ordinal
+            );
+
+            if (parameterIndex >= 0) {
+                return message[..parameterIndex];
+            }
+
+            return message;
         }
     }
 }

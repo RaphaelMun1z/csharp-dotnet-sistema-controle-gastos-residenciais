@@ -39,6 +39,8 @@ builder.Services.AddScoped<TransactionHateoasAssembler>();
 
 // Adiciona a configuração do banco de dados
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
+// Garante que o banco de dados exista e esteja pronto para uso
+DatabaseInitializer.EnsureDatabaseExists(builder.Configuration);
 // Adiciona a configuração do Evolve para migrações de banco de dados
 builder.Services.AddEvolveConfiguration(builder.Configuration, builder.Environment);
 
@@ -49,16 +51,21 @@ builder.Services.AddScoped<ITokenService, TokenServiceImpl>();
 builder.Services.AddScoped<IAuthService, AuthServiceImpl>();
 builder.Services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
 
+builder.Services.AddValidationConfiguration();
+
 // Adiciona os serviços
 builder.Services.AddScoped<IPersonService, PersonServiceImpl>();
 builder.Services.AddScoped<IAccountService, AccountServiceImpl>();
 builder.Services.AddScoped<ITransactionService, TransactionServiceImpl>();
+builder.Services.AddScoped<IFinancialSummaryService, FinancialSummaryServiceImpl>();
 
 // Adiciona o repositório genérico
 builder.Services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 // Adiciona os repositórios específicos
+builder.Services.AddScoped<IPersonRepository, PersonRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IFinancialSummaryRepository, FinancialSummaryRepository>();
 
 // Adiciona o tratamento global de exceções
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using SistemaControleGastosResidenciais.Authentication.Models;
 using System.Text;
@@ -21,7 +22,9 @@ namespace SistemaControleGastosResidenciais.Configurations {
                 throw new InvalidOperationException("A chave JWT não foi configurada");
             }
 
-            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey));
+            SymmetricSecurityKey securityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtSettings.SecretKey)
+            );
 
             services
                 .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -40,6 +43,41 @@ namespace SistemaControleGastosResidenciais.Configurations {
 
                             ClockSkew = TimeSpan.Zero
                         };
+
+                    options.Events = new JwtBearerEvents {
+                        OnChallenge = async context => {
+                            context.HandleResponse();
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            context.Response.ContentType = "application/problem+json";
+
+                            ProblemDetails problemDetails = new ProblemDetails {
+                                Status = StatusCodes.Status401Unauthorized,
+                                Title = "Não autorizado",
+                                Detail = "É necessário estar autenticado para acessar este recurso",
+                                Instance = context.HttpContext.Request.Path
+                            };
+
+                            await context.Response.WriteAsJsonAsync(
+                                problemDetails
+                            );
+                        },
+
+                        OnForbidden = async context => {
+                            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                            context.Response.ContentType = "application/problem+json";
+
+                            ProblemDetails problemDetails = new ProblemDetails {
+                                Status = StatusCodes.Status403Forbidden,
+                                Title = "Acesso negado",
+                                Detail = "Você não possui permissão para acessar este recurso",
+                                Instance = context.HttpContext.Request.Path
+                            };
+
+                            await context.Response.WriteAsJsonAsync(
+                                problemDetails
+                            );
+                        }
+                    };
                 });
 
             services.AddAuthorization();
