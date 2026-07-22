@@ -32,7 +32,7 @@ namespace SistemaControleGastosResidenciais.Configurations.Swagger {
                 case "GetByPersonId":
                     operation.Summary = "Lista as transações de uma pessoa";
                     operation.Description =
-                        "Retorna uma lista paginada com todas as transações associadas à pessoa informada";
+                        "Retorna uma lista paginada com as transações associadas à pessoa informada, ordenadas da mais recente para a mais antiga";
                     break;
 
                 case "Create":

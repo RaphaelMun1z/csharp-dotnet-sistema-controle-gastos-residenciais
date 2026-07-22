@@ -8,6 +8,7 @@ namespace SistemaControleGastosResidenciais.Entities {
         private decimal _amount;
         private TransactionTypeEnum _type;
         private string _description = string.Empty;
+        private DateOnly _transactionDate;
 
         [Column("PersonId", TypeName = "uniqueidentifier")]
         public Guid PersonId { get; private set; }
@@ -44,6 +45,19 @@ namespace SistemaControleGastosResidenciais.Entities {
             }
         }
 
+        [Column("TransactionDate", TypeName = "date")]
+        public DateOnly TransactionDate {
+            get => _transactionDate;
+
+            // Valida a data financeira antes de atribuí-la à propriedade
+            private set {
+                _transactionDate = ValidateTransactionDate(value);
+            }
+        }
+
+        [Column("CreatedAt", TypeName = "datetime2")]
+        public DateTime CreatedAt { get; private set; }
+
         public Person Person { get; private set; } = null!;
 
         protected Transaction() {
@@ -53,7 +67,8 @@ namespace SistemaControleGastosResidenciais.Entities {
             Guid personId,
             decimal amount,
             TransactionTypeEnum type,
-            string description
+            string description,
+            DateOnly transactionDate
         ) : base(Guid.NewGuid()) { // Gera um novo identificador único para a entidade
             if (personId == Guid.Empty) {
                 throw new ArgumentException("Informe um identificador de pessoa válido", nameof(personId));
@@ -63,6 +78,8 @@ namespace SistemaControleGastosResidenciais.Entities {
             Amount = amount;
             Type = type;
             Description = description;
+            TransactionDate = transactionDate;
+            CreatedAt = DateTime.UtcNow;
         }
 
         private static decimal ValidateAmount(decimal amount) {
@@ -98,6 +115,17 @@ namespace SistemaControleGastosResidenciais.Entities {
             }
 
             return normalizedDescription;
+        }
+
+        private static DateOnly ValidateTransactionDate(DateOnly transactionDate) {
+            DateOnly today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // Verifica se a data da transação está no futuro
+            if (transactionDate > today) {
+                throw new ArgumentException("A data da transação não pode ser uma data futura", nameof(transactionDate));
+            }
+
+            return transactionDate;
         }
     }
 }

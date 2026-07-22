@@ -20,7 +20,8 @@ namespace SistemaControleGastosResidenciais.Repositories.Implementations {
         ) {
             return _context.Transactions
                 .Where(transaction => transaction.PersonId == personId)
-                .OrderBy(transaction => transaction.Description)
+                .OrderByDescending(transaction => transaction.TransactionDate)
+                .ThenBy(transaction => transaction.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();

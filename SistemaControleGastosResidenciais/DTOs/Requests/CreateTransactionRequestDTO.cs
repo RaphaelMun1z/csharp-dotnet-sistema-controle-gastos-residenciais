@@ -17,6 +17,8 @@ namespace SistemaControleGastosResidenciais.DTOs.Requests {
 
         [Required(ErrorMessage = "A descrição é obrigatória.")]
         [MaxLength(255, ErrorMessage = "A descrição não pode ter mais de 255 caracteres.")]
-        string Description
+        string Description,
+
+        DateOnly TransactionDate
     );
 }

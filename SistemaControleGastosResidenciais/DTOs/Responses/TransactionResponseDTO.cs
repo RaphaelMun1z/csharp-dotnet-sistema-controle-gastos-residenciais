@@ -6,6 +6,8 @@ namespace SistemaControleGastosResidenciais.DTOs.Responses {
         Guid PersonId,
         decimal Amount,
         TransactionTypeEnum Type,
-        string Description
+        string Description,
+        DateOnly TransactionDate,
+        DateTime CreatedAt
     );
 }

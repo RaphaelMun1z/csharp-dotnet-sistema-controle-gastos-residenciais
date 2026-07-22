@@ -12,7 +12,9 @@ namespace SistemaControleGastosResidenciais.Mappings.Implementations {
                 transaction.PersonId,
                 transaction.Amount,
                 transaction.Type,
-                transaction.Description
+                transaction.Description,
+                transaction.TransactionDate,
+                transaction.CreatedAt
             );
         }
 
@@ -22,7 +24,8 @@ namespace SistemaControleGastosResidenciais.Mappings.Implementations {
                 transactionDTO.PersonId,
                 transactionDTO.Amount,
                 transactionDTO.Type,
-                transactionDTO.Description
+                transactionDTO.Description,
+                transactionDTO.TransactionDate
             );
         }
 
