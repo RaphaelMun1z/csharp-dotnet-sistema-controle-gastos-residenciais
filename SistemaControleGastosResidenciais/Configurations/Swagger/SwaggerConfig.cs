@@ -38,6 +38,7 @@ namespace SistemaControleGastosResidenciais.Configurations.Swagger {
                 options.OperationFilter<PersonOperationFilter>();
                 options.OperationFilter<TransactionOperationFilter>();
                 options.OperationFilter<AuthOperationFilter>();
+                options.OperationFilter<FinancialSummaryOperationFilter>();
             });
 
             return services;
