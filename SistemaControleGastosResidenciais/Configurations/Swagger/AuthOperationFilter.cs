@@ -6,18 +6,19 @@ namespace SistemaControleGastosResidenciais.Configurations.Swagger {
         public void Apply(OpenApiOperation operation, OperationFilterContext context) {
             string? actionName = context.MethodInfo.Name;
 
-            switch (actionName) {
-                case "Register":
-                    operation.Summary = "Registra um novo usuário";
-                    operation.Description =
-                        "Cria uma nova pessoa e uma conta associada utilizando nome, data de nascimento, e-mail e senha";
-                    break;
+            if (actionName == "Register") {
+                operation.Summary = "Cadastrar usuário";
+                operation.Description = "Cria uma nova pessoa e sua respectiva conta no sistema.";
+            }
 
-                case "Login":
-                    operation.Summary = "Autentica um usuário";
-                    operation.Description =
-                        "Autentica uma conta utilizando e-mail e senha e retorna um token JWT para acesso aos endpoints protegidos";
-                    break;
+            if (actionName == "Login") {
+                operation.Summary = "Autenticar usuário";
+                operation.Description = "Autentica uma conta utilizando e-mail e senha e retorna um token JWT.";
+            }
+
+            if (actionName == "Me") {
+                operation.Summary = "Consultar usuário autenticado";
+                operation.Description = "Retorna os dados da conta e da pessoa associadas ao usuário autenticado, utilizando o token JWT informado na requisição.";
             }
         }
     }

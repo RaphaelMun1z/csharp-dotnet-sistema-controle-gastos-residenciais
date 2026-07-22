@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using SistemaControleGastosResidenciais.DTOs.Requests;
 using SistemaControleGastosResidenciais.DTOs.Responses;
 using SistemaControleGastosResidenciais.Services.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace SistemaControleGastosResidenciais.Controllers {
     [ApiController]
@@ -47,6 +49,24 @@ namespace SistemaControleGastosResidenciais.Controllers {
             _logger.LogDebug("Recebida solicitação de autenticação");
 
             LoginResponseDTO response = _authService.Login(loginDTO);
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthUserResponseDTO))]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public ActionResult<AuthUserResponseDTO> Me() {
+            string? accountIdClaim =
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(accountIdClaim) || !Guid.TryParse(accountIdClaim, out Guid accountId)) {
+                throw new UnauthorizedAccessException("Usuário não autenticado");
+            }
+
+            AuthUserResponseDTO response = _authService.FindAuthenticatedUser(accountId);
+
             return Ok(response);
         }
     }

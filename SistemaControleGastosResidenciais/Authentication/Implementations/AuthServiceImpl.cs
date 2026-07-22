@@ -130,5 +130,29 @@ namespace SistemaControleGastosResidenciais.Authentication.Implementations {
                 generatedToken.ExpiresAt
             );
         }
+
+        // Retorna informações do usuário autenticado com base no ID da conta
+        public AuthUserResponseDTO FindAuthenticatedUser(Guid accountId) {
+            if (accountId == Guid.Empty) {
+                _logger.LogWarning("Tentativa de buscar usuário autenticado com ID de conta inválido");
+                throw new UnauthorizedAccessException("Usuário não autenticado");
+            }
+
+            Account? account = _accountRepository.FindById(accountId);
+
+            if (account == null) {
+                _logger.LogWarning("Conta autenticada não encontrada para o ID {AccountId}", accountId);
+                throw new UnauthorizedAccessException("Usuário não autenticado");
+            }
+
+            PersonResponseDTO person = _personService.FindById(account.PersonId);
+
+            return new AuthUserResponseDTO(
+                account.Id,
+                account.PersonId,
+                person.Name,
+                account.Email
+            );
+        }
     }
 }
